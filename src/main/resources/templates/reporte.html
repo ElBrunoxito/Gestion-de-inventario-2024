@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Reporte</title>
+</head>
+<body>
+<h1>Reporte: <span th:text="${titulo}"></span></h1>
+<p>Fecha: <span th:text="${fecha}"></span></p>
+<table border="1">
+    <tr>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Total</th>
+    </tr>
+    <tr th:each="item : ${datos}">
+        <td th:text="${item.producto}"></td>
+        <td th:text="${item.cantidad}"></td>
+        <td th:text="${item.total}"></td>
+    </tr>
+</table>
+</body>
+</html>
