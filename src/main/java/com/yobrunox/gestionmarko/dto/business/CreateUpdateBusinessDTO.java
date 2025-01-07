@@ -29,7 +29,7 @@ public class CreateUpdateBusinessDTO {
     private String urlImage;
 
 
-    private MultipartFile file;
+    //private MultipartFile file;
 
     private List<UserEntity> users;
 

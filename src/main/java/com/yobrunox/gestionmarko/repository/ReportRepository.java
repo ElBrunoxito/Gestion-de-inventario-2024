@@ -2,6 +2,7 @@ package com.yobrunox.gestionmarko.repository;
 
 import com.yobrunox.gestionmarko.dto.report.GetBuyDataForReport;
 import com.yobrunox.gestionmarko.dto.report.GetSalesDataForReportDTO;
+import com.yobrunox.gestionmarko.models.DetailBuy;
 import com.yobrunox.gestionmarko.models.Report;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,30 +24,42 @@ public interface ReportRepository extends JpaRepository<Report, UUID> {
             "WHERE B.buyUpdateDate BETWEEN :start AND :end " +
             "AND U.business.id = :idBusiness AND DB.product.idProduct = :idProduct")
 */
-    @Query(nativeQuery = true,value = "SELECT IFNULL(SUM(DB.quantity),0), IFNULL(SUM(DB.quantity* DB.price),0)" +
-            "FROM buy B" +
-            "LEFT JOIN detail_buy DB ON B.id_buy = DB.buy_id_buy" +
-            "INNER JOIN user_entity U ON U.id = B.user_id_user" +
+    /*
+    @Query(nativeQuery = true,value = "SELECT DISTINCT IFNULL(SUM(DB.quantity),0) AS sumQuantity, DISTINCT IFNULL(SUM(DB.quantity* DB.price),0) AS sumTotal " +
+            "FROM buy B " +
+            "LEFT JOIN detail_buy DB ON B.id_buy = DB.buy_id_buy " +
+            "INNER JOIN user_entity U ON U.id = B.user_id_user " +
             "WHERE B.buy_update_date BETWEEN :start AND :end " +
             "AND U.business_id_business = :idBusiness AND DB.product_id_product = :idProduct")
-    Optional<GetBuyDataForReport> getBuysReportForProduct(@Param("idBusiness") Long idBusiness,
+    GetBuyDataForReport getBuysReportForProduct(@Param("idBusiness") Long idBusiness,
                                                           @Param("start") LocalDateTime start,
                                                           @Param("end") LocalDateTime end,
                                                           @Param("idProduct") UUID idProduct);
+*/
+    @Query("SELECT db FROM Buy b " +
+            "LEFT JOIN b.detailBuys db " +
+            "INNER JOIN b.user u " +
+            "WHERE b.buyUpdateDate BETWEEN :start AND :end " +
+            "AND u.business.id= :idBusiness " +
+            "AND db.product.idProduct= :idProduct")
+    List<DetailBuy> getBuysReportForProduct(@Param("idBusiness") Long idBusiness,
+                                            @Param("start") LocalDateTime start,
+                                            @Param("end") LocalDateTime end,
+                                            @Param("idProduct") UUID idProduct);
 
-    @Query(nativeQuery = true, value ="SELECT NEW com.yobrunox.gestionmarko.dto.report.GetSalesDataForReportDTO( U.username,IFNULL(SUM(DS.quantity),0) ,IFNULL(SUM(DS.price),0))" +
-            "FROM sale S" +
-            "INNER JOIN detail_sale DS ON DS.sale_id_sale = S.id_sale" +
-            "INNER JOIN user_entity U ON U.id = S.user_id_user" +
-            "LEFT JOIN collect C ON C.sale_id_sale = S.id_sale" +
-            "WHERE S.sale_update_date BETWEEN :start AND :end" +
-            "AND U.business_id_business = :idBusiness" +
-            "AND DS.product_id_product = :idProduct" +
+    @Query(nativeQuery = true, value ="SELECT U.username,IFNULL(SUM(DS.quantity),0) ,IFNULL(SUM(DS.price),0) " +
+            "FROM sale S " +
+            "INNER JOIN detail_sale DS ON DS.sale_id_sale = S.id_sale " +
+            "INNER JOIN user_entity U ON U.id = S.user_id_user " +
+            "LEFT JOIN collect C ON C.sale_id_sale = S.id_sale " +
+            "WHERE S.sale_update_date BETWEEN :start AND :end " +
+            "AND U.business_id_business = :idBusiness " +
+            "AND DS.product_id_product = :idProduct " +
             "AND (CASE " +
             "WHEN :type = 1 THEN C.id_collection IS NOT NULL " +
-            "WHEN :type = 2 THEN C.id_collection IS NULL" +
-            "WHEN :type = 3 THEN C.id_collection IS NOT NULL OR C.id_collection IS NULL" +
-            "END)" +
+            "WHEN :type = 2 THEN C.id_collection IS NULL " +
+            "WHEN :type = 3 THEN C.id_collection IS NOT NULL OR C.id_collection IS NULL " +
+            "END) " +
             "GROUP BY U.id")
     Optional<List<GetSalesDataForReportDTO>> getSalesReportForProduct(
             @Param("idBusiness") Long idBusiness,

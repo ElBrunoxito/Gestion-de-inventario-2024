@@ -1,6 +1,7 @@
 package com.yobrunox.gestionmarko.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.yobrunox.gestionmarko.dto.report.GetBuyDataForReport;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +11,17 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+
+@SqlResultSetMapping(
+        name = "GetBuyDataForReportMapping",
+        classes = @ConstructorResult(
+                targetClass = GetBuyDataForReport.class,
+                columns = {
+                        @ColumnResult(name = "totalQuantity", type = Long.class),
+                        @ColumnResult(name = "totalPrice", type = Double.class)
+                }
+        )
+)
 
 @Entity
 @Data

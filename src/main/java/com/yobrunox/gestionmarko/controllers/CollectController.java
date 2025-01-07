@@ -10,7 +10,7 @@ import com.yobrunox.gestionmarko.models.Sale;
 import com.yobrunox.gestionmarko.models.UserEntity;
 import com.yobrunox.gestionmarko.repository.SaleRepository;
 import com.yobrunox.gestionmarko.repository.UserRepository;
-import com.yobrunox.gestionmarko.security.JwtProvider;
+import com.yobrunox.gestionmarko.config.JwtProvider;
 import com.yobrunox.gestionmarko.services.CollectService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -56,7 +56,7 @@ public class CollectController {
             //if(!user.getRoles().stream().anyMatch(role -> role.getRole() == ERole.ADMIN)){
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startOfDay = now.with(LocalTime.MIN);  // 00:00:00 de hoy
-        LocalDateTime endOfDay = now.with(LocalTime.of(11, 59, 59));
+        LocalDateTime endOfDay = now.with(LocalTime.of(23, 59, 59));
         //if(sale.getSaleDate().isAfter(startOfDay) && sale.getSaleDate().isBefore(endOfDay)){
 
         //if(user.getRoles()){
@@ -73,6 +73,7 @@ public class CollectController {
         Collect collect =  collectService.addCollect(collectAddDTO,user.getBusiness(),sale);
 
         String message = "";
+
         if (isAdmin && cumple) {
             message = "El cobro con "+ collect.getSale().getSaleTotal()+" se ha realizado :|, pero ya vencio el dia";
         }else{
@@ -108,6 +109,27 @@ public class CollectController {
                 .build();
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("generatePdf/{idSale}")
+    public ResponseEntity<?> generatePdf(@PathVariable("idSale") UUID idSale,@RequestHeader("Authorization") String authHeader){
+        String token = authHeader.replace("Bearer ","");
+        String username = jwtProvider.getUsernameFromToken(token);
+
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(
+                () -> new BusinessException("M-400", HttpStatus.NOT_FOUND,"Usuario no existente")
+        );
+
+        Sale sale = saleRepository.findById(idSale).orElseThrow(() -> new BusinessException("M-400", HttpStatus.NOT_FOUND,"Venta no existente"));
+        String urlPdf = collectService.generatePdfURL(sale.getCollect().getIdCollection(), user.getBusiness());
+        ErrorDTO response = ErrorDTO.builder()
+                .message("PDF GENERADO CORRECTAMENTE")
+                .code("M-200")
+                .body(urlPdf)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+
     /*
     @PutMapping("update")
     public ResponseEntity<?> updateCollect(){

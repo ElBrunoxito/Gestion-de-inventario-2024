@@ -63,6 +63,9 @@ public class DetailBuyService {
                 .buy(detailBuyAddDTO.getBuy())
                 .product(product)
 
+
+                .remainingQuantity(detailBuyAddDTO.getQuantity())
+
                 .build();
 
         DetailBuy detailBuySAVE = detailBuyRepository.saveAndFlush(detailBuy);
@@ -119,6 +122,9 @@ public class DetailBuyService {
         detailBuy.setDueDate(detailBuyAddDTO.getDueDate());
         detailBuy.setBuy(detailBuyAddDTO.getBuy());
         detailBuy.setProduct(product);
+
+        detailBuy.setRemainingQuantity(detailBuyAddDTO.getQuantity());
+
 
         DetailBuy detailBuySAVE = detailBuyRepository.saveAndFlush(detailBuy);
 

@@ -1,16 +1,12 @@
 package com.yobrunox.gestionmarko.controllers;
 
 import com.yobrunox.gestionmarko.dto.buy.BuyAddDTO;
-import com.yobrunox.gestionmarko.dto.buy.DetailBuyGetDTO;
 import com.yobrunox.gestionmarko.dto.exception.BusinessException;
 import com.yobrunox.gestionmarko.dto.exception.ErrorDTO;
-import com.yobrunox.gestionmarko.dto.product.ProductAddDTO;
 import com.yobrunox.gestionmarko.models.Buy;
-import com.yobrunox.gestionmarko.models.ERole;
-import com.yobrunox.gestionmarko.models.Product;
 import com.yobrunox.gestionmarko.models.UserEntity;
 import com.yobrunox.gestionmarko.repository.UserRepository;
-import com.yobrunox.gestionmarko.security.JwtProvider;
+import com.yobrunox.gestionmarko.config.JwtProvider;
 import com.yobrunox.gestionmarko.services.BuyService;
 import com.yobrunox.gestionmarko.services.DetailBuyService;
 import lombok.AllArgsConstructor;
@@ -106,6 +102,24 @@ public class BuyController {
                 .build();
         return ResponseEntity.ok(response);
         //return ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable UUID id,
+                                    @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ","");
+        String username = jwtProvider.getUsernameFromToken(token);
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(
+                () -> new BusinessException("M-400", HttpStatus.NOT_FOUND,"Usuario no existente")
+        );
+        buyService.deleteBuy(id);
+
+        ErrorDTO response = ErrorDTO.builder()
+                .message("Compra eimando correctamente eliminado correctamente")
+                .code("M-200")
+                //.body(buy)
+                .build();
+        return ResponseEntity.ok(response);
     }
 
 }

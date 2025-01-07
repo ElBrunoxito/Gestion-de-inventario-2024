@@ -5,8 +5,10 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.draw.LineSeparator;
+import com.yobrunox.gestionmarko.dto.exception.BusinessException;
 import com.yobrunox.gestionmarko.dto.sale.collect.PdfAddDTO;
 import com.yobrunox.gestionmarko.dto.sale.collect.ProductsPDFAddDTO;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -50,11 +52,17 @@ public class PdfService{
 
 
         try {
-            Image image = Image.getInstance(data.getUrlImage());
+            /*Image image = Image.getInstance(data.getUrlImage());
+            image.scaleToFit(154, 50);
+            image.setAlignment(Element.ALIGN_CENTER);
+            document.add(image);*/
+            String urlImage = data.getUrlImage();
+            Image image = Image.getInstance(new URL(urlImage)); // Usa directamente un objeto URL
             image.scaleToFit(154, 50);
             image.setAlignment(Element.ALIGN_CENTER);
             document.add(image);
         }catch (Exception e){
+            throw new BusinessException("M-400", HttpStatus.NOT_FOUND, "Error al generar imagen " + e.getMessage());
 
         }
 

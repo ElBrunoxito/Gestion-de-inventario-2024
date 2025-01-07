@@ -1,23 +1,21 @@
 package com.yobrunox.gestionmarko.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yobrunox.gestionmarko.dto.business.CreateUpdateBusinessDTO;
 import com.yobrunox.gestionmarko.dto.business.GetBusinessSimpleDTO;
 import com.yobrunox.gestionmarko.dto.exception.BusinessException;
 import com.yobrunox.gestionmarko.dto.exception.ErrorDTO;
 import com.yobrunox.gestionmarko.models.Business;
-import com.yobrunox.gestionmarko.models.ERole;
 import com.yobrunox.gestionmarko.models.UserEntity;
 import com.yobrunox.gestionmarko.repository.UserRepository;
-import com.yobrunox.gestionmarko.security.JwtProvider;
+import com.yobrunox.gestionmarko.config.JwtProvider;
 import com.yobrunox.gestionmarko.services.BusinessService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/")
@@ -94,18 +92,33 @@ public class BusinessController {
     //Update Business
 
     @PutMapping("admin/business/update")
-    public ResponseEntity<?> updateBusiness(@RequestParam CreateUpdateBusinessDTO request,
-                                            @RequestParam("file") MultipartFile file,
+    public ResponseEntity<?> updateBusiness(@RequestParam("file") MultipartFile file,
+                                            @RequestParam("data") String  data,
                                             @RequestHeader("Authorization") String authHeader) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        CreateUpdateBusinessDTO businessDTO = null;
+
+        try {
+            businessDTO = objectMapper.readValue(data, CreateUpdateBusinessDTO.class);
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().body("Error al deserializar los datos: " + e.getMessage());
+        }
+
 
         String token = authHeader.replace("Bearer ","");
         String username = jwtProvider.getUsernameFromToken(token);
+        System.out.println("Llego hasta aqui 1 ");
+
+
 
         if(!userRepository.existsByUsername(username)){
             throw new BusinessException("M-400", HttpStatus.NOT_FOUND,"Usuario no encontrado");
         }
+        System.out.println("Llego hasta aqui 2 ");
 
         UserEntity user = userRepository.findByUsername(username).orElse(null);
+        System.out.println("Llego hasta aqui 3 ");
+
 
         /*
         CreateUpdateBusinessDTO request = CreateUpdateBusinessDTO.builder()
@@ -116,18 +129,53 @@ public class BusinessController {
                 .phone("+51 987 654 321")
                 .build();*/
 
-        request.setId(user.getBusiness().getId());
-        request.setFile(file);
-        Business business = businessService.updateBusiness(request);
+        //request.setId(user.getBusiness().getId());
+        //data.setFile(file);
+        System.out.println("Llego hasta aqui 4");
+        try {
 
+            Business business = businessService.updateBusiness(businessDTO,file);
+
+            System.out.println("Llego hasta aqui 5");
+
+            ErrorDTO response = ErrorDTO.builder()
+                    .message(business != null?"Business actualizado correctamente":"Ocurrio un error")
+                    .code("M-200")
+                    .build();
+
+
+            return ResponseEntity.ok(response);
+        }catch (Exception e){
+            throw new BusinessException("M-400", HttpStatus.NOT_FOUND,"Prueba");
+        }
+
+
+
+    }
+
+
+
+    @GetMapping("admin/business/getUserRoles")
+    public ResponseEntity<?> getUserAndRoles(
+            @RequestHeader("Authorization") String authHeader) {
+
+        String token = authHeader.replace("Bearer ","");
+        String username = jwtProvider.getUsernameFromToken(token);
+
+        if(!userRepository.existsByUsername(username)){
+            throw new BusinessException("M-400", HttpStatus.NOT_FOUND,"Usuario no encontrado");
+        }
+
+        UserEntity user = userRepository.findByUsername(username).orElse(null);
+
+        var data = businessService.getUserAndRoles(user);
         ErrorDTO response = ErrorDTO.builder()
-                .message(business != null?"Business actualizado correctamente":"Ocurrio un error")
+                .body(data)
                 .code("M-200")
                 .build();
 
 
         return ResponseEntity.ok(response);
-
     }
 
 

@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -40,5 +41,13 @@ public class DetailBuy {
     @JoinColumn(name = "Product_idProduct")
     @JsonIgnore
     private Product product;
+
+
+
+
+    //MARGIN
+    private Integer remainingQuantity; // Cantidad restante disponible
+
+
 
 }

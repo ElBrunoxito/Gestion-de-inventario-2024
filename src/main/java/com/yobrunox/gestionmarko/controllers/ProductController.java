@@ -8,7 +8,7 @@ import com.yobrunox.gestionmarko.models.ERole;
 import com.yobrunox.gestionmarko.models.Product;
 import com.yobrunox.gestionmarko.models.UserEntity;
 import com.yobrunox.gestionmarko.repository.UserRepository;
-import com.yobrunox.gestionmarko.security.JwtProvider;
+import com.yobrunox.gestionmarko.config.JwtProvider;
 import com.yobrunox.gestionmarko.services.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -41,13 +41,27 @@ public class ProductController {
 
         return ResponseEntity.ok(productService.getAll(user.getBusiness().getId()));
     }
+    @GetMapping("user/product/getAll")
+    public ResponseEntity<?> getAllForUser(@RequestHeader("Authorization") String authHeader){
+        String token = authHeader.replace("Bearer ","");
+        String username = jwtProvider.getUsernameFromToken(token);
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(
+                () -> new BusinessException("M-400", HttpStatus.NOT_FOUND,"Usuario no existente")
 
+        );
+        if(!user.getRoles().stream().anyMatch(role -> role.getRole() == ERole.ADMIN)){
+            new BusinessException("M-403", HttpStatus.FORBIDDEN,"No tienes permiso para ver los productos");
+        }
+
+        return ResponseEntity.ok(productService.getAllProductsForUser(user.getBusiness().getId()));
+    }
+/*
     @GetMapping("user/product/{idProduct}")
     public ResponseEntity<?> getProductAdmin(@PathVariable UUID idProduct,
             @RequestHeader("Authorization") String authHeader){
 
         return ResponseEntity.ok(productService.getProductByUser(idProduct));
-    }
+    }*/
 
     @GetMapping("admin/product/{idProduct}")
     public ResponseEntity<?> getProductUser(@PathVariable UUID idProduct,

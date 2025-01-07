@@ -18,21 +18,26 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
 
 
-    @Query("SELECT new com.yobrunox.gestionmarko.dto.product.ProductoGetDTO(P.idProduct,P.barCode,P.description,P.unit.name,P.initialStock,P.currentStock,P.category.name,P.state) " +
+    @Query("SELECT new com.yobrunox.gestionmarko.dto.product.ProductoGetDTO(P.idProduct,P.barCode,P.description,P.unit.name,P.initialStock,P.priceBuy,P.priceSale,P.minStock,P.maxStock,P.currentStock,P.category.name,P.state) " +
             "FROM Product P WHERE P.business.id = :idBusiness ORDER BY P.barCode")
     Optional<List<ProductoGetDTO>> getAllProducts(@Param("idBusiness") Long idBusiness);
+
+
+    @Query("SELECT new com.yobrunox.gestionmarko.dto.product.ProductGetUserDTO(P.idProduct,P.barCode,P.description,P.priceBuy,P.priceSale) " +
+            "FROM Product P WHERE P.business.id = :idBusiness ORDER BY P.barCode")
+    Optional<List<ProductGetUserDTO>> getAllProductsForUser(@Param("idBusiness") Long idBusiness);
 
 //    Optional<List<ProductoGetDTO>> getAllByBusiness_Id(Long idB);
     //Optional<List<ProductoGetDTO>> findAllByBusiness_Id(Long idB);
 
 
-    @Query("SELECT new com.yobrunox.gestionmarko.dto.product.ProductGetUserDTO(P.idProduct,P.barCode,CONCAT(P.description,' x ',P.unit.name)) " +
+    @Query("SELECT new com.yobrunox.gestionmarko.dto.product.ProductGetUserDTO(P.idProduct,P.barCode,CONCAT(P.description,' x ',P.unit.name), P.priceBuy,P.priceSale) " +
             "FROM Product P WHERE P.idProduct = :idProduct ORDER BY P.barCode")
     Optional<ProductGetUserDTO> getProductByIdUser(@Param("idProduct") UUID idProduct);
 
 
 
-    @Query("SELECT new com.yobrunox.gestionmarko.dto.product.ProductGetAdminDTO(P.idProduct,P.barCode,P.description,P.initialStock,P.category.name,P.unit.name) " +
+    @Query("SELECT new com.yobrunox.gestionmarko.dto.product.ProductGetAdminDTO(P.idProduct,P.barCode,P.description,P.initialStock,P.priceBuy,P.priceSale,P.minStock,P.maxStock,P.category.name,P.unit.name) " +
             "FROM Product P WHERE P.idProduct = :idProduct ORDER BY P.barCode")
     Optional<ProductGetAdminDTO> getProductByIdAdmin(@Param("idProduct") UUID idProduct);
 
@@ -46,11 +51,11 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
 
     //Interacion con detauls buys
-    @Query("SELECT new com.yobrunox.gestionmarko.dto.product.ProductGetUserDTO(DB.product.idProduct,DB.product.barCode,DB.product.description) " +
+    @Query("SELECT new com.yobrunox.gestionmarko.dto.product.ProductGetUserDTO(DB.product.idProduct,DB.product.barCode,DB.product.description,DB.product.priceBuy,DB.product.priceSale) " +
             "FROM DetailBuy DB WHERE DB.idDetailBuy = :idDB ")
     ProductGetUserDTO getProductDTOByIdDetailBuy(@Param("idDB") UUID idDB );
 
-    @Query("SELECT new com.yobrunox.gestionmarko.dto.product.ProductGetUserDTO(DS.product.idProduct,DS.product.barCode,DS.product.description) " +
+    @Query("SELECT new com.yobrunox.gestionmarko.dto.product.ProductGetUserDTO(DS.product.idProduct,DS.product.barCode,DS.product.description,DS.product.priceBuy,DS.product.priceSale) " +
             "FROM DetailSale DS WHERE DS.idDetailSale = :idDS ")
     ProductGetUserDTO getProductDTOByIdDetailSale(@Param("idDS") UUID idDS);
 

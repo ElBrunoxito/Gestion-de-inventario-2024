@@ -34,7 +34,7 @@ public class Business {
     private String urlImage;
 
 
-    //private String message = "¡GRACIAS POR SU COMPRA!";
+    private String message = "¡GRACIAS POR SU COMPRA!";
     //Users
     /*
     @OneToOne

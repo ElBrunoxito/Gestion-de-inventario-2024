@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.Set;
 
 @Builder
 @Data
@@ -15,4 +16,6 @@ public class TokenResponse {
     private String access_token;
     private String refresh_token;
     private Date expires_in;
+    private String username;
+    private Set<String> roles;
 }

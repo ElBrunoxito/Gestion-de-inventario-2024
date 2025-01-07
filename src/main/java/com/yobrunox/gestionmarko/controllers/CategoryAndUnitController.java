@@ -9,7 +9,7 @@ import com.yobrunox.gestionmarko.models.UserEntity;
 import com.yobrunox.gestionmarko.repository.TypeComprobanteRepository;
 import com.yobrunox.gestionmarko.repository.TypePaymentRepository;
 import com.yobrunox.gestionmarko.repository.UserRepository;
-import com.yobrunox.gestionmarko.security.JwtProvider;
+import com.yobrunox.gestionmarko.config.JwtProvider;
 import com.yobrunox.gestionmarko.services.CategoryService;
 import com.yobrunox.gestionmarko.services.UnitService;
 import lombok.AllArgsConstructor;

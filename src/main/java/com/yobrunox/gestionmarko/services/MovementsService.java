@@ -1,6 +1,5 @@
 package com.yobrunox.gestionmarko.services;
 
-import com.yobrunox.gestionmarko.dto.DeletingUUIDPdto;
 import com.yobrunox.gestionmarko.dto.exception.BusinessException;
 import com.yobrunox.gestionmarko.models.*;
 import com.yobrunox.gestionmarko.repository.MovementsRepository;
@@ -9,7 +8,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;

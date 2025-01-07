@@ -1,9 +1,13 @@
 package com.yobrunox.gestionmarko.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.api.services.storage.Storage;
 import com.yobrunox.gestionmarko.dto.exception.BusinessException;
 import com.yobrunox.gestionmarko.dto.report.*;
 import com.yobrunox.gestionmarko.models.Business;
+import com.yobrunox.gestionmarko.models.DetailBuy;
 import com.yobrunox.gestionmarko.models.Product;
 import com.yobrunox.gestionmarko.models.Report;
 import com.yobrunox.gestionmarko.repository.BusinessRepository;
@@ -33,17 +37,42 @@ public class ReportService {
 
         LocalDateTime startOfDay = data.getStartDate().with(LocalTime.MIN);  // 00:00:00 de hoy
         LocalDateTime endOfDay = data.getEndDate().with(LocalTime.MAX);
-        System.out.println("Aqui 44");
 
-        GetBuyDataForReport buyReport = reportRepository.getBuysReportForProduct(idBusiness, startOfDay, endOfDay,data.getIdProduct()).orElseThrow(
+
+
+
+
+
+        /*GetBuyDataForReport buyReport = reportRepository.getBuysReportForProduct(idBusiness, startOfDay, endOfDay, data.getIdProduct()).orElseThrow(
                 ()-> new BusinessException("M-500", HttpStatus.BAD_REQUEST,"Ha ocurrido un error al buscar buy in report")
-        );
-        System.out.println("Aqui 5");
+
+        );*/
+        List<DetailBuy> dbs = reportRepository.getBuysReportForProduct(idBusiness, startOfDay, endOfDay, data.getIdProduct());
+        /*Integer sQ = 0;
+        Double sT = 0;
+        dbs.stream()
+                .forEach(db->{
+                    sQ = sQ db.getQuantity();
+                    sT += db.getQuantity() * db.getPrice();
+                });*/
+
+
+        GetBuyDataForReport buyReport = dbs.stream()
+                .reduce(
+                        new GetBuyDataForReport(0,0.0),
+                        (acc, item) -> new GetBuyDataForReport(
+                                acc.getSumQuantity() + item.getQuantity(),
+                                acc.getSumTotal() + item.getQuantity() * item.getPrice()
+                        ),
+                        (acc1, acc2) -> new GetBuyDataForReport(
+                                acc1.getSumQuantity()+ acc2.getSumQuantity(),
+                                acc1.getSumTotal() + acc2.getSumTotal()
+                        )
+                );
 
         List<GetSalesDataForReportDTO> salesReport = reportRepository.getSalesReportForProduct(idBusiness,startOfDay,endOfDay,data.getIdProduct(),data.getTypeFilter()).orElseThrow(
                 ()-> new BusinessException("M-500", HttpStatus.BAD_REQUEST,"Ha ocurrido un error al buscar sales in report")
         );
-        System.out.println("Aqui 6");
 
         //List<GetSalesDataForReportDTO> salesReport = new ArrayList<>();
 
@@ -74,6 +103,10 @@ public class ReportService {
 
 
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        objectMapper.registerModule(new JavaTimeModule()); // Para serializar LocalDateTime
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         String jsonData;
         //objectMapper.writeValueAsString(generateReportGetDTO);
         System.out.println("Aqui 11");

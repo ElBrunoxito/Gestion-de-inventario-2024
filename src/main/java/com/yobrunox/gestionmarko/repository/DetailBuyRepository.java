@@ -32,4 +32,13 @@ public interface DetailBuyRepository extends JpaRepository<DetailBuy, UUID> {
     @Modifying
     @Query("DELETE FROM DetailBuy D WHERE D.idDetailBuy IN :ids AND D.buy.idBuy = :idBuy")
     void deleteByIds(@Param("ids") Set<UUID> ids, @Param("idBuy") UUID idBuy);
+
+
+
+
+    ///MARGIN
+
+    @Query("SELECT b FROM DetailBuy b WHERE b.product.idProduct = :productId AND b.remainingQuantity > 0 ORDER BY b.dueDate ASC")
+    List<DetailBuy> findAvailableBuysByProductId(@Param("productId") Long productId);
+
 }

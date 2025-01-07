@@ -1,10 +1,8 @@
-package com.yobrunox.gestionmarko.security;
+package com.yobrunox.gestionmarko.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.security.Key;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,6 +60,15 @@ public class JwtProvider {
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser().setSigningKey(secret).parseClaimsJws(token); // Verificar el token
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private boolean isTokenExpired(String token)

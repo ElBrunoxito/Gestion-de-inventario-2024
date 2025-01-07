@@ -27,6 +27,9 @@ public class Report {
     private String fechasRango;
 
     private Integer type;
+
+    @Lob
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String script;
 
 

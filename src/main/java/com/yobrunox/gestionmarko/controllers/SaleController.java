@@ -1,13 +1,12 @@
 package com.yobrunox.gestionmarko.controllers;
 
-import com.yobrunox.gestionmarko.dto.buy.BuyAddDTO;
 import com.yobrunox.gestionmarko.dto.exception.BusinessException;
 import com.yobrunox.gestionmarko.dto.exception.ErrorDTO;
 import com.yobrunox.gestionmarko.dto.sale.SaleAddDTO;
 import com.yobrunox.gestionmarko.dto.sale.SaleGetSimpleDTO;
 import com.yobrunox.gestionmarko.models.*;
 import com.yobrunox.gestionmarko.repository.UserRepository;
-import com.yobrunox.gestionmarko.security.JwtProvider;
+import com.yobrunox.gestionmarko.config.JwtProvider;
 import com.yobrunox.gestionmarko.services.DetailSaleService;
 import com.yobrunox.gestionmarko.services.SaleService;
 import lombok.AllArgsConstructor;
@@ -21,7 +20,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("api")
 @AllArgsConstructor
-public class SaleController {
+public class    SaleController {
 
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
@@ -185,9 +184,15 @@ public class SaleController {
 
 
 
-    @DeleteMapping("delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable UUID id) {
-        //saleService.
+    @DeleteMapping("user/sale/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable UUID id,
+                                    @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ","");
+        String username = jwtProvider.getUsernameFromToken(token);
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(
+                () -> new BusinessException("M-400", HttpStatus.NOT_FOUND,"Usuario no existente")
+        );
+        saleService.deleteSale(id, user.getBusiness().getId());
 
         ErrorDTO response = ErrorDTO.builder()
                 .message("Venta eliminado correctamente")

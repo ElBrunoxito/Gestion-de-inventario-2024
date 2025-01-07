@@ -12,7 +12,14 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductGetUserDTO {
+
+
+
     private UUID idProduct;
     private String barCode;
     private String description;
+    private Double priceBuy;
+    private Double priceSale;
+
+
 }

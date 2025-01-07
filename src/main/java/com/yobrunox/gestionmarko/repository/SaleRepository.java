@@ -1,6 +1,7 @@
 package com.yobrunox.gestionmarko.repository;
 
 import com.yobrunox.gestionmarko.dto.buy.BuyGetDTO;
+import com.yobrunox.gestionmarko.dto.dashboard.DateWithPriceDTO;
 import com.yobrunox.gestionmarko.dto.sale.SaleGetDTO;
 import com.yobrunox.gestionmarko.models.Sale;
 import com.yobrunox.gestionmarko.models.TypeComprobante;
@@ -37,4 +38,19 @@ public interface SaleRepository extends JpaRepository<Sale, UUID> {
     @Query("SELECT MAX(S.code) FROM Sale S WHERE S.typeComprobante.idTypeComprobante = :idTypeC ORDER BY S.code DESC")
     String findLastCodeByDocumentType(@Param("idTypeC") Integer idTypeC);
 
+
+
+
+    @Query("SELECT  COALESCE(SUM(S.saleTotal),0.0) FROM Collect C " +
+            "LEFT JOIN Sale S ON S.idSale = C.sale.idSale " +
+            "WHERE S.saleUpdateDate BETWEEN :start AND :end AND C.typePayment.idTypePayment = :idTypePayment")
+    Double getMoneySaleINDATES(@Param("start")LocalDateTime start, @Param("end")LocalDateTime end, @Param("idTypePayment") Integer idTypePayment);
+
+
+
+    //Dashboard
+
+    @Query("SELECT NEW com.yobrunox.gestionmarko.dto.dashboard.DateWithPriceDTO(SUM(S.saleTotal),DATE(S.saleUpdateDate))" +
+            "FROM Sale S GROUP BY DATE(S.saleUpdateDate) ORDER BY DATE(S.saleUpdateDate) ASC")
+    Optional<List<DateWithPriceDTO>> getDashBoardForSales();
 }

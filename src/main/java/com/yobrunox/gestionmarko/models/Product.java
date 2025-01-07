@@ -27,6 +27,17 @@ public class Product {
     private Long initialStock;
     @Column(nullable = false)
     private Long currentStock;
+
+
+    //Precios
+    private Double priceBuy;
+    private Double priceSale;
+
+    //Indicators
+    private Long minStock;
+    private Long maxStock;
+
+
     //ACTIVO O INACTIVO
     private Boolean state;
 

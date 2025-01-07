@@ -3,12 +3,11 @@ package com.yobrunox.gestionmarko.services;
 import com.yobrunox.gestionmarko.dto.auth.LoginRequest;
 import com.yobrunox.gestionmarko.dto.auth.RegisterRequest;
 import com.yobrunox.gestionmarko.dto.auth.TokenResponse;
-import com.yobrunox.gestionmarko.dto.business.CreateUpdateBusinessDTO;
 import com.yobrunox.gestionmarko.dto.exception.BusinessException;
 import com.yobrunox.gestionmarko.models.*;
 import com.yobrunox.gestionmarko.repository.RoleRepository;
 import com.yobrunox.gestionmarko.repository.UserRepository;
-import com.yobrunox.gestionmarko.security.JwtProvider;
+import com.yobrunox.gestionmarko.config.JwtProvider;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -55,18 +54,19 @@ public class UserService {
         String token = jwtProvider.generateToken(users);
         /*Date expirationDate = jwtProvider.getExpiration(token);*/
 
-/*        Set<String> roles = new HashSet<>();
+        Set<String> roles = new HashSet<>();
         users.getRoles().forEach(role -> {
             roles.add(role.getRole().name());
-        });*/
+        });
         //System.out.println(roles);
 
         return TokenResponse.builder()
                 .access_token(token)
                 .refresh_token(jwtProvider.refreshToken(users))
-                //.Roles(roles)
+                .roles(roles)
                 //.expirationDate(expirationDate)
                 .expires_in(jwtProvider.getExpiration(token))
+                .username(users.getUsername())
                 .build();
     }
     @Transactional

@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -37,4 +38,10 @@ public class DetailSale {
     @ManyToOne
     @JoinColumn(name = "Product_idProduct")
     private Product product;
+
+
+
+    //MARGIN
+    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<MarginSaleBuy> saleBuyRelations;
 }

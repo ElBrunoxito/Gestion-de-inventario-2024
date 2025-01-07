@@ -8,7 +8,7 @@ import com.yobrunox.gestionmarko.dto.product.ProductoGetDTO;
 import com.yobrunox.gestionmarko.dto.exception.BusinessException;
 import com.yobrunox.gestionmarko.models.*;
 import com.yobrunox.gestionmarko.repository.*;
-import com.yobrunox.gestionmarko.security.JwtProvider;
+import com.yobrunox.gestionmarko.config.JwtProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -52,7 +52,9 @@ public class ProductService {
         return productRepository.getAllProducts(id_Business).orElse(new ArrayList<>());
         //return productRepository.getAllProducts(user.getId()).orElse(new ArrayList<>());
     }
-
+    public List<ProductGetUserDTO> getAllProductsForUser(Long id_Business){
+        return productRepository.getAllProductsForUser(id_Business).orElse(new ArrayList<>());
+    }
     public ProductGetAdminDTO getProductByAdmin(UUID idProduct){
         return productRepository.getProductByIdAdmin(idProduct).orElseThrow(
                 () -> new BusinessException("M-400", HttpStatus.NOT_FOUND,"Ha ocurrido un error")
@@ -93,6 +95,10 @@ public class ProductService {
                 .description(productAddDTO.getDescription())
                 .initialStock(productAddDTO.getInitialStock())
                 .currentStock(productAddDTO.getInitialStock())
+                .priceBuy(productAddDTO.getPriceBuy())
+                .priceSale(productAddDTO.getPriceSale())
+                .minStock(productAddDTO.getMinStock())
+                .maxStock(productAddDTO.getMaxStock())
                 .state(true)
                 .category(category)
                 .business(business)
@@ -139,6 +145,10 @@ public class ProductService {
                 .description(productAddDTO.getDescription())
                 .initialStock(productAddDTO.getInitialStock())
                 .currentStock(currentStock)
+                .priceBuy(productAddDTO.getPriceBuy())
+                .priceSale(productAddDTO.getPriceSale())
+                .minStock(productAddDTO.getMinStock())
+                .maxStock(productAddDTO.getMaxStock())
                 .state(true)
                 .category(category)
                 .business(business)

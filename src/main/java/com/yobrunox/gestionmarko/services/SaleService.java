@@ -1,14 +1,12 @@
 package com.yobrunox.gestionmarko.services;
 
-import com.yobrunox.gestionmarko.dto.DeletingUUIDPdto;
-import com.yobrunox.gestionmarko.dto.buy.BuyWithDetailsGetDTO;
 import com.yobrunox.gestionmarko.dto.exception.BusinessException;
 import com.yobrunox.gestionmarko.dto.sale.DetailSaleAddDTO;
 import com.yobrunox.gestionmarko.dto.sale.SaleAddDTO;
 import com.yobrunox.gestionmarko.dto.sale.SaleGetDTO;
 import com.yobrunox.gestionmarko.dto.sale.SaleWithDetailsGetDTO;
-import com.yobrunox.gestionmarko.dto.sale.collect.CollectAddDTO;
-import com.yobrunox.gestionmarko.models.Buy;
+import com.yobrunox.gestionmarko.models.Business;
+import com.yobrunox.gestionmarko.models.Collect;
 import com.yobrunox.gestionmarko.models.Sale;
 import com.yobrunox.gestionmarko.models.TypeComprobante;
 import com.yobrunox.gestionmarko.repository.DetailSaleRepository;
@@ -33,6 +31,8 @@ public class SaleService {
     private final TypeComprobanteRepository typeComprobanteRepository;
     private final DetailSaleService detailSaleService;
     private final DetailSaleRepository detailSaleRepository;
+    private final CollectService collectService;
+    //private final CollectService collectService;
 
     public List<SaleGetDTO> getAllForBusinessAdmin(Long idBusiness){
         return saleRepository.getAllForBusinessAdmin(idBusiness).orElse(new ArrayList<>());
@@ -269,7 +269,12 @@ public class SaleService {
         return saleSave;
     }
 
-    public void deleteSale(UUID idSale){
+    public void deleteSale(UUID idSale,Long idBusiness){
+
+
+
+        collectService.deleteSale(idSale,idBusiness);
+
         saleRepository.deleteById(idSale);
     }
 

@@ -66,6 +66,7 @@ public class BuyService {
                 .sum();
 
         //
+
         boolean isAnywayZero = buyAddDTO.getDetailsBuy().stream()
                 .anyMatch(detail -> detail.getQuantity() == 0|| detail.getPrice() == 0);
 
@@ -189,7 +190,13 @@ public class BuyService {
 
         return buySave;
     }
+    public void deleteBuy(UUID idBuy){
 
+
+
+
+        buyRepository.deleteById(idBuy);
+    }
 
 
 

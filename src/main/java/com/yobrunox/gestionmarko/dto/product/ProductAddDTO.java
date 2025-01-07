@@ -24,6 +24,16 @@ public class ProductAddDTO {
     private String description;
     private Long initialStock = 0L;
 
+
+
+    private Double priceBuy;
+    private Double priceSale;
+
+
+    private Long minStock;
+    private Long maxStock;
+
+
     //CATEGORIA
     private CategoryAddDTO categoryAddFast;
 

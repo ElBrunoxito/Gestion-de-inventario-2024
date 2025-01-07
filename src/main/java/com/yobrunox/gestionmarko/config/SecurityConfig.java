@@ -1,4 +1,4 @@
-package com.yobrunox.gestionmarko.security;
+package com.yobrunox.gestionmarko.config;
 
 import com.yobrunox.gestionmarko.dto.exception.CustomerAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;

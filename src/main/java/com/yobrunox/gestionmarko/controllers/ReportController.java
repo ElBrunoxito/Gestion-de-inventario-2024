@@ -6,7 +6,7 @@ import com.yobrunox.gestionmarko.dto.report.CreateReportGenerateProductDTO;
 import com.yobrunox.gestionmarko.dto.report.GETREPORT;
 import com.yobrunox.gestionmarko.models.UserEntity;
 import com.yobrunox.gestionmarko.repository.UserRepository;
-import com.yobrunox.gestionmarko.security.JwtProvider;
+import com.yobrunox.gestionmarko.config.JwtProvider;
 import com.yobrunox.gestionmarko.services.ReportService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
